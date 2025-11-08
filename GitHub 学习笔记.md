@@ -110,7 +110,7 @@ Public/Private：公开（免费）或私有（需付费，萌新选 Public）�
 **我的个人主页参考**
 1. https://blog.csdn.net/m0_73784704/article/details/151047622
 2. https://www.cnblogs.com/PeterJXL/p/18437094 <br>
- 1. ![使用语言和活动统计]![阶段一参考截图1](https://github.com/user-attachments/assets/40efe1a5-dfb1-4fd2-9694-23c4adf5ce4c)
+ 1. 使用语言和活动统计![阶段一参考截图1](https://github.com/user-attachments/assets/40efe1a5-dfb1-4fd2-9694-23c4adf5ce4c)
 
 
  2. ![打字特效]![阶段一参考截图2](https://github.com/user-attachments/assets/567b244e-5118-48da-bc0e-65cc140e8866)
@@ -121,6 +121,7 @@ Public/Private：公开（免费）或私有（需付费，萌新选 Public）�
 ## 六、总结
 GitHub 是工具，核心是“用它解决问题”。遇到报错别慌，复制错误信息去 Google 等搜索引擎搜。
 （附：GitHub 官方文档 → https://docs.github.com/zh）
+
 
 
 
