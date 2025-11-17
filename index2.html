@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>简单留言板</title>
+    <style>
+        /* 颜色填充 */
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background-color: #f0f8ff; /* 浅蓝色背景 */
+            transition: background-color 0.3s;
+        }
+        .box {
+            max-width: 600px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 5px;
+            border: 2px solid #4169e1; /* 蓝色边框 */
+        }
+        h1 {
+            text-align: center;
+            color: #4169e1; /* 蓝色标题 */
+        }
+        input, textarea {
+            width: 100%;
+            margin: 10px 0;
+            padding: 8px;
+            border: 1px solid #4169e1;
+            border-radius: 3px;
+        }
+        /* 按钮颜色 */
+        .theme-btn {
+            background-color: #4169e1;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            cursor: pointer;
+            margin: 5px;
+            border-radius: 3px;
+        }
+        .submit-btn {
+            background-color: #32cd32; /* 绿色提交按钮 */
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            cursor: pointer;
+            margin: 5px;
+            border-radius: 3px;
+        }
+        #msgList {
+            margin-top: 20px;
+            border-top: 1px solid #ccc;
+            padding-top: 10px;
+        }
+        .msg {
+            background: #f8f8ff; /* 浅紫色留言背景 */
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 3px;
+            border-left: 3px solid #9370db; /* 紫色侧边线 */
+        }
+        .msg .name {
+            color: #9370db; /* 紫色昵称 */
+            font-weight: bold;
+        }
+        .msg .time {
+            color: #666;
+            font-size: 12px;
+            text-align: right;
+        }
+        /* 深色模式颜色调整 */
+        .dark {
+            background-color: #1a1a2e; /* 深色背景 */
+            color: white;
+        }
+        .dark .box {
+            background: #162447;
+            border-color: #e43f5a;
+        }
+        .dark h1 {
+            color: #e43f5a; /* 深色模式红色标题 */
+        }
+        .dark input, .dark textarea {
+            border-color: #e43f5a;
+            background: #2c3e50;
+            color: white;
+        }
+        .dark .theme-btn {
+            background-color: #e43f5a;
+        }
+        .dark .submit-btn {
+            background-color: #feca57;
+            color: #1a1a2e;
+        }
+        .dark .msg {
+            background: #2c3e50;
+            border-left-color: #feca57; /* 深色模式黄色侧边线 */
+        }
+        .dark .msg .name {
+            color: #feca57;
+        }
+    </style>
+</head>
+<body>
+    <div class="box">
+        <h1>简单留言板</h1>
+        
+        <!-- 主题切换按钮 -->
+        <button class="theme-btn" onclick="changeTheme()">切换深色模式</button><br
+        
+        <!-- 输入区 -->
+        昵称：<input type="text" id="name" placeholder="请输名称"><br>
+        留言：<textarea id="content" placeholder="请输留言"></textarea><br>
+        <button class="submit-btn" onclick="submitMsg()">提交留言</button>
+        
+        <!-- 留言列表 -->
+        <div id="msgList"></div>
+    </div>
+
+    <script>
+        // 主题切换
+        function changeTheme() {
+            const body = document.body;
+            body.classList.toggle('dark');
+        }
+
+        // 提交留言
+        function submitMsg() {
+            const name = document.getElementById('name').value;
+            const content = document.getElementById('content').value;
+            const msgList = document.getElementById('msgList');
+
+            if (!name || !content) {
+                alert('名称和留言都不能为空！');
+                return;
+            }
+
+            const time = new Date().toLocaleString();//给每条留言加上时间，方便查看发布时间
+            const msg = document.createElement('div');//创建一个新的div元素来存放留言
+            msg.className = 'msg';//设置div的类名为msg，方便样式控制
+            msg.innerHTML = `<div class="name">${name}</div><div>${content}</div><div class="time">${time}</div>`;
+
+            msgList.insertBefore(msg, msgList.firstChild);//将新的留言插入到留言列表的最前面
+
+            document.getElementById('name').value = '';
+            document.getElementById('content').value = '';//清空输入框
+        }
+    </script>
+</body>
+</html>
