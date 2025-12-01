@@ -1,0 +1,790 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Geek组 - 新思路</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Microsoft Yahei", sans-serif;
+        }
+        /* 导航栏 - 贴合参考图橙黄色样式 */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background: #ffb900;
+            display: flex;
+            justify-content: space-around;
+            gap: 0;
+            z-index: 999;
+            padding: 8px 0;
+            border-bottom: 2px solid #ff8c00;
+        }
+        .navbar a {
+            background: transparent;
+            color: #000;
+            padding: 6px 20px;
+            text-decoration: none;
+            border-radius: 0;
+            font-size: 16px;
+            font-weight: 500;
+            position: relative;
+            transition: color 0.3s ease;
+        }
+        .navbar a:hover {
+            color: #fff;
+        }
+        .navbar a[href="#introduction"] .qrcode-hover {
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 180px;
+            height: auto;
+            padding: 5px;
+            background: #fff;
+            border: 1px solid #eee;
+            border-radius: 4px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            z-index: 1000;
+            margin-top: 5px;
+        }
+        .navbar a[href="#introduction"] .qrcode-hover img {
+            width: 100%;
+            height: auto;
+        }
+        .navbar a[href="#introduction"]:hover .qrcode-hover {
+            display: block;
+        }
+        .navbar a::after {
+            content: "▼";
+            font-size: 10px;
+            margin-left: 5px;
+            color: #000;
+        }
+        .navbar a[href*="new-thread"]::after {
+            content: "♠";
+        }
+        /* 顶部占位 */
+        .top-placeholder {
+            height: 60px;
+        }
+        /* 容器：取消最大宽度，撑满整行 */
+        .container {
+            width: 100%;
+            margin: 0 auto;
+            padding: 0 20px;
+            max-width: none; /* 关键：取消1200px限制，撑满整行 */
+        }
+        /* 顶部Logo+插画区域：背景图撑满整行核心修改 */
+        .header-section {
+            text-align: center;
+            padding: 20px 0;
+            position: relative;
+            width: 100%;
+            min-height: 600px; /* 增大高度，保证背景图显示面积 */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            /* 核心：background-size改为cover，撑满容器且保持比例 */
+            background: url(background_Homepage.png) no-repeat center center;
+            background-size: cover; /* 替换原contain，实现撑满 */
+            background-position: top center; /* 顶部居中，保证关键内容显示 */
+        }
+        /* Geek logo 叠加在背景上，增大尺寸适配 */
+        .geek-logo {
+            max-width: 500px; /* 从400px增大，适配更大背景 */
+            height: auto;
+            margin: 0 auto;
+            display: block;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 10;
+            transition: transform 0.3s ease;
+        }
+        .geek-logo:hover {
+            transform: translate(-50%, -50%) scale(1.1);
+        }
+        .header-illustration {
+            display: none;
+        }
+        /* 介绍卡片：撑满整行 */
+        .card-section {
+            margin: 40px 0;
+            width: 100%;
+        }
+        .card {
+            display: flex;
+            align-items: center;
+            margin: 30px 0;
+            padding: 20px;
+            border: 2px solid #000;
+            border-radius: 8px;
+            box-shadow: none;
+            background: #fff;
+            position: relative;
+            overflow: hidden;
+            width: 100%; /* 卡片撑满整行 */
+            max-width: none; /* 取消最大宽度限制 */
+        }
+        .card:nth-child(1) { flex-direction: row; }
+        .card:nth-child(2) { flex-direction: row-reverse; }
+        .card:nth-child(3) { flex-direction: row; }
+        .card:nth-child(4) { flex-direction: row-reverse; }
+        .card-img {
+            width: 250px; /* 增大图片容器 */
+            height: 250px;
+            margin: 0 20px;
+            border-radius: 0;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.5s ease;
+        }
+        .card-img:hover {
+            transform: rotate(5deg) scale(1.05);
+        }
+        .card-img img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            background: #fff;
+        }
+        .card-content {
+            flex: 1;
+            padding: 0 10px;
+        }
+        .card-title {
+            font-size: 24px;
+            margin-bottom: 10px;
+            color: #000;
+            font-weight: bold;
+            font-family: "SimHei", sans-serif;
+        }
+        .card-slogan {
+            margin-bottom: 15px;
+            font-style: normal;
+            font-weight: bold;
+            font-size: 18px;
+        }
+        .card:nth-child(1) .card-slogan { 
+            color: #0066cc; 
+            quotes: "\"" "\"";
+        }
+        .card:nth-child(1) .card-slogan::before { content: open-quote; }
+        .card:nth-child(1) .card-slogan::after { content: close-quote; }
+        .card:nth-child(2) .card-slogan { 
+            color: #e6399b; 
+            quotes: "'" "'";
+        }
+        .card:nth-child(2) .card-slogan::before { content: open-quote; }
+        .card:nth-child(2) .card-slogan::after { content: close-quote; }
+        .card:nth-child(3) .card-slogan { color: #009688; }
+        .card:nth-child(4) .card-slogan { color: #ff4500; }
+        .card-desc {
+            font-size: 15px;
+            line-height: 1.6;
+            color: #000;
+            text-align: justify;
+        }
+        /* About Us 部分 */
+        .about-section {
+            margin: 40px 0;
+            padding: 30px 20px;
+            border: 2px dashed #999;
+            border-radius: 8px;
+            background: #f9f9f9;
+            position: relative;
+            width: 100%;
+        }
+        .about-section::after {
+            content: "";
+            position: absolute;
+            width: 100px;
+            height: 100px;
+            bottom: -20px;
+            right: -20px;
+            background: url(decoration_Butterfly.png) no-repeat center;
+            background-size: contain;
+            z-index: 1;
+        }
+        .about-section::before {
+            content: "";
+            position: absolute;
+            width: 30px;
+            height: 30px;
+            top: -10px;
+            left: -10px;
+            border: 2px solid #999;
+            border-right: none;
+            border-bottom: none;
+        }
+        .about-title {
+            font-size: 22px;
+            margin-bottom: 25px;
+            text-align: center;
+            color: #333;
+        }
+        .about-cards {
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            gap: 20px;
+            width: 100%;
+        }
+        .about-card {
+            width: 200px;
+            padding: 15px;
+            border: 2px solid #9370db;
+            border-radius: 8px;
+            text-align: center;
+            background: #fff;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .about-card:hover {
+            transform: scale(1.08);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+        .about-card-text {
+            font-size: 14px;
+            color: #666;
+            line-height: 1.5;
+        }
+        /* Contact Us 部分 */
+        .contact-section {
+            margin: 40px 0;
+            padding: 20px;
+            border: 3px solid #00ced1;
+            border-radius: 12px 8px 15px 10px;
+            background: #f5fffe;
+            position: relative;
+            background-image: none;
+            box-shadow: 0 0 0 4px #f5fffe, 0 0 0 7px #e0ffff;
+            width: 100%;
+        }
+        .contact-section .decor-left {
+            position: absolute;
+            top: 0;
+            left: -30px;
+            width: 120px;
+            height: 100%;
+            background: url(decoration_Decoration.png) no-repeat center;
+            background-size: contain;
+            z-index: 1;
+        }
+        .contact-section .decor-bottom-left {
+            position: absolute;
+            bottom: -10px;
+            left: 10px;
+            width: 80px;
+            height: 80px;
+            background: url(decoration_Leaves.png) no-repeat center;
+            background-size: contain;
+            z-index: 1;
+        }
+        .contact-section .decor-ladybug {
+            position: absolute;
+            bottom: -5px;
+            left: -5px;
+            width: 40px;
+            height: 40px;
+            background: url(decoration_Ladybug.png) no-repeat center;
+            background-size: contain;
+            z-index: 1;
+        }
+        .contact-section .decor-right {
+            position: absolute;
+            bottom: -20px;
+            right: -20px;
+            width: 150px;
+            height: 120px;
+            background: url(decoration_Chameleon.png) no-repeat center;
+            background-size: contain;
+            z-index: 1;
+        }
+        .contact-title {
+            font-size: 24px;
+            margin-bottom: 20px;
+            text-align: center;
+            color: #008b8b;
+            font-weight: bold;
+            text-shadow: 1px 1px 0 #fff, 2px 2px 0 #008b8b;
+        }
+        .contact-list {
+            list-style: none;
+            margin-bottom: 20px;
+            line-height: 1.8;
+            font-size: 14px;
+            color: #333;
+            position: relative;
+            z-index: 2;
+            padding-left: 10px;
+        }
+        .contact-list li {
+            padding-left: 20px;
+            position: relative;
+            margin: 8px 0;
+            transform: skew(-1deg);
+        }
+        .contact-list li::before {
+            content: "•";
+            position: absolute;
+            left: 0;
+            color: #008b8b;
+            font-weight: bold;
+            font-size: 18px;
+        }
+        .contact-email {
+            color: #0066cc;
+            cursor: pointer;
+            text-decoration: underline;
+        }
+        .contact-email:hover {
+            color: #0056b3;
+        }
+        .contact-btns {
+            margin-top: 15px;
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            position: relative;
+            z-index: 2;
+        }
+        .contact-btn {
+            padding: 8px 18px;
+            background: #228b22;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            text-decoration: none;
+            font-size: 14px;
+            transition: background 0.3s ease;
+            border: 1px solid #006400;
+            box-shadow: 2px 2px 0 #006400;
+        }
+        .contact-btn:hover {
+            background: #006400;
+            box-shadow: 1px 1px 0 #006400;
+            transform: translate(1px, 1px);
+        }
+        /* 二维码弹窗 */
+        .qrcode-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.6);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(2px);
+            transition: opacity 0.3s ease;
+        }
+        .qrcode-content {
+            background: #fff;
+            padding: 25px;
+            border-radius: 12px;
+            text-align: center;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+            max-width: 350px;
+            width: 90%;
+            transform: scale(0.9);
+            transition: transform 0.3s ease;
+        }
+        .qrcode-modal.show .qrcode-content {
+            transform: scale(1);
+        }
+        .qrcode-img {
+            width: 280px;
+            height: auto;
+            margin: 15px 0;
+            border: 1px solid #eee;
+            border-radius: 8px;
+            padding: 10px;
+            background: #fff;
+        }
+        .qrcode-content h3 {
+            font-size: 18px;
+            color: #ff8c00;
+            margin-bottom: 10px;
+        }
+        .qrcode-content p {
+            font-size: 14px;
+            color: #666;;
+            margin-bottom: 15px;
+        }
+        .close-btn {
+            margin-top: 10px;
+            padding: 8px 20px;
+            background: #ff8c00;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background 0.3s ease;
+        }
+        .close-btn:hover {
+            background: #e68a00;
+        }
+        .link-tip {
+            font-size: 12px;
+            color: #888;
+            margin-top: 8px;
+            text-align: center;
+            position: relative;
+            z-index: 2;
+        }
+        /* 问答部分 */
+        .qa-section {
+            margin: 40px 0;
+            padding: 20px;
+            border-radius: 8px;
+            background: linear-gradient(135deg, #e8f4ff 0%, #d4e8ff 100%);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            width: 100%;
+        }
+        .qa-title {
+            font-size: 22px;
+            margin-bottom: 20px;
+            text-align: center;
+            color: #333;
+        }
+        .qa-item {
+            margin: 10px 0;
+            border: 1px solid #b3d9ff;
+            border-radius: 4px;
+            background: #fff;
+            transition: box-shadow 0.3s ease;
+        }
+        .qa-item:hover {
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+        .qa-question {
+            padding: 12px 15px;
+            cursor: pointer;
+            font-weight: 500;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: #333;
+        }
+        .qa-question::after {
+            content: "+";
+            font-size: 18px;
+            color: #ff8c00;
+            transition: transform 0.3s ease;
+        }
+        .qa-question.active::after {
+            content: "-";
+            transform: rotate(180deg);
+        }
+        .qa-answer {
+            padding: 0 15px;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+            line-height: 1.6;
+            font-size: 14px;
+            color: #555;
+        }
+        .qa-answer.show {
+            padding: 0 15px 15px;
+            max-height: 500px;
+        }
+        /* 响应式适配 */
+        @media (max-width: 768px) {
+            .card {
+                flex-direction: column !important;
+            }
+            .card-img {
+                margin: 10px 0;
+            }
+            .qrcode-img {
+                width: 220px;
+            }
+            .geek-logo {
+                max-width: 280px;
+            }
+            .header-section {
+                height: 400px;
+                min-height: auto;
+            }
+            .contact-section .decor-left,
+            .contact-section .decor-bottom-left,
+            .contact-section .decor-ladybug,
+            .contact-section .decor-right,
+            .about-section::after {
+                display: none;
+            }
+            .navbar {
+                padding: 6px 0;
+            }
+            .navbar a {
+                font-size: 14px;
+                padding: 4px 10px;
+            }
+            .navbar a[href="#introduction"] .qrcode-hover {
+                display: none !important;
+            }
+            .card-img:hover {
+                transform: none;
+            }
+            .about-card:hover {
+                transform: none;
+                box-shadow: none;
+            }
+            .geek-logo:hover {
+                transform: translate(-50%, -50%) scale(1);
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <a href="#introduction">
+            Introduction
+            <div class="qrcode-hover">
+                <img src="qrcode_1699620268564.png" alt="Geek招新群二维码">
+            </div>
+        </a>
+        <a href="#about">About US</a>
+        <a href="https://campus.new-thread.com/" target="_blank">NewThread</a>
+        <a href="#contact">Contact Us</a>
+        <a href="#qa">Q&A</a>
+    </nav>
+
+    <div class="top-placeholder"></div>
+
+    <div class="container">
+        <div class="header-section">
+            <img src="decoration_Geek.png" alt="Geek Logo" class="geek-logo">
+            <img src="background_Homepage.png" alt="Geek团队插画" class="header-illustration">
+        </div>
+
+        <section id="introduction" class="card-section">
+            <div class="card">
+                <div class="card-content">
+                    <h3 class="card-title">开发程序猿</h3>
+                    <p class="card-slogan">Stay Hungry，Stay Foolish</p>
+                    <p class="card-desc">
+                        前端：前端开发是创建Web或app视觉界面呈现给用户的过程通过HTML，CSS及JavaScript以及衍生出来的各种技术、框架、解决方案，实现互联网产品的用户界面交互。<br>
+                        后端：通常也称服务器端开发。不对用户显示,负责处理前端的请求，进行逻辑处理和数据交互。<br>
+                        客户端: 移动应用开发是为了小型、无线计算设备编写软件的流程和程序的集合，例如智能手机或平板电脑。
+                    </p>
+                </div>
+                <div class="card-img">
+                    <img src="Geek_Programmer.png" alt="开发程序猿配图">
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-content">
+                    <h3 class="card-title">产品经理</h3>
+                    <p class="card-slogan">好的软件的特征是,明明没用过，但总觉得用过似的。</p>
+                    <p class="card-desc">
+                        PM是针对某一项或是某一类的产品进行规划和管理的人员。<br>
+                        PM需要拥有缜密的产品逻辑思维，研究用户心理，负责产品的整个生命周期。<br>
+                        PM参与产品的UI和交互设计，为设计和开发确定产品原型，能够将产品变得有个性,操作变得舒适简单、自由。<br>
+                        PM需要一定的文档能力和沟通能力，能够在团队合作的过程中跟各个角色进行有效沟通。
+                    </p>
+                </div>
+                <div class="card-img">
+                    <img src="Geek_PM.png" alt="产品经理配图">
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-content">
+                    <h3 class="card-title">游戏开发</h3>
+                    <p class="card-slogan">TECH OTAKUS SAVE THE WORLD</p>
+                    <p class="card-desc">
+                        对游戏开发的热爱和追求，使我们相聚于此。涉及计算机图形学的学习，我们使用物理模拟引擎Unity开发我们所追求的世界，一个故事，一个角色，在我们的世界里改变现实，创造新的可能，我们参与，我们改变，我们创造...
+                    </p>
+                </div>
+                <div class="card-img">
+                    <img src="Geek_Game.png" alt="游戏开发配图">
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-content">
+                    <h3 class="card-title">安全</h3>
+                    <p class="card-slogan">路漫漫其修远兮，非大毅力者不能</p>
+                    <p class="card-desc">
+                        我们主要学习Web安全和二进制安全。在Web安全中我们将学习和实践Web漏洞挖掘技术，也将探索和讨论Web安全实践的方法。在二进制安全中我们专注于分析和防御与计算机程序、系统相关的威胁，同时实践漏洞分析和修补。耐心和钻研缺一不可。
+                    </p>
+                </div>
+                <div class="card-img">
+                    <img src="Geek_security.png" alt="安全板块配图">
+                </div>
+            </div>
+        </section>
+
+        <section id="about" class="about-section">
+            <h2 class="about-title">About Us</h2>
+            <div class="about-cards">
+                <div class="about-card">
+                    <div class="about-card-text">
+                        <img src="about_Speech.png" alt="Speech" style="width: 60px; height: 60px; margin: 0 auto 10px;">
+                        每周我们会举行一次技术例会，用来汇报我们的学习内容，供成员之间交流学习。
+                    </div>
+                </div>
+                <div class="about-card">
+                    <div class="about-card-text">
+                        <img src="about_Diversity.png" alt="Diversity" style="width: 60px; height: 60px; margin: 0 auto 10px;">
+                        多元化是我们的特色。在这里，你可以拥有多种方向选择，前后端、安全、AI、产品/设计、游戏等。
+                    </div>
+                </div>
+                <div class="about-card">
+                    <div class="about-card-text">
+                        <img src="about_Time.png" alt="Time" style="width: 60px; height: 60px; margin: 0 auto 10px;">
+                        耐心、毅力是我们必备的品质，每周我们会至少花30小时在实验室中。以保证技术的精进。
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="contact" class="contact-section">
+            <div class="decor-left"></div>
+            <div class="decor-bottom-left"></div>
+            <div class="decor-ladybug"></div>
+            <div class="decor-right"></div>
+
+            <h2 class="contact-title">Contact Us</h2>
+            <ul class="contact-list">
+                <li>热爱计算机，具有geek精神，喜欢DIY，动手能力较强</li>
+                <li>有编程/算法/硬件基础为佳(有作品可附上)</li>
+                <li>有足够的空余时间，热爱思考，对事物有自己的见解</li>
+                <li>
+                    ps:非新思路统招只有通过发送邮件自我介绍后，收到邮件回执后才会被允许进群,在读学生, 都可邮件到
+                    <span class="contact-email" id="emailCopy">newthread_geek@outlook.com</span>
+                    报名加入.(信中需备注个人基本信息以及意向方向,此招新活动为长期招新)
+                </li>
+            </ul>
+            <div class="contact-btns">
+                <button class="contact-btn" id="qqBtn">QQ-Group</button>
+                <a href="mailto:newthread_geek@outlook.com" class="contact-btn">E-mail</a>
+                <a href="https://github.com/NewThread-GeekGroup" class="contact-btn" target="_blank">Github</a>
+            </div>
+            <p class="link-tip">提示：点击QQ群按钮查看招新群二维码；GitHub链接跳转至团队开源仓库</p>
+        </section>
+
+        <section id="qa" class="qa-section" style="background: url(background_QA.png) no-repeat center; background-size: cover;">
+            <h2 class="qa-title">More Questions</h2>
+            <div class="qa-item">
+                <div class="qa-question">1.什么是Geek(极客)？Geek精神又是什么？</div>
+                <div class="qa-answer">拥有好奇之心，改变之力，爱钻研，能折腾。</div>
+            </div>
+            <div class="qa-item">
+                <div class="qa-question">2.招新是安排在什么时间？</div>
+                <div class="qa-answer">按照惯例，正式招新时间是在9月下旬~10月上旬，不过今年会有一些改动，笔试地点一般在9号教学楼。如果想要了解我们，可以加入我们的QQ群，招新具体的安排/变动会在招新群通知。</div>
+            </div>
+            <div class="qa-item">
+                <div class="qa-question">3.我们有考核吗？考核流程是怎样的呀？</div>
+                <div class="qa-answer">嗯...我们一共有一轮笔试和两轮面试。权衡技术、经验和学习能力，第一轮是一些视野性的题目，淘汰率并不高。第二轮单独面试， 根据你的笔试提出技术相关的问题、兴趣爱好、个人看法。最后一轮群面，首先问及时间分配上的问题，其次也会向你提出各种奇怪的问题。这一轮中许多题目其实并不难，也无标准答案，重在考察同学们在压力下的逻辑思维。全部通过成为预备成员啦。</div>
+            </div>
+            <div class="qa-item">
+                <div class="qa-question">4.考核是怎样的形式？</div>
+                <div class="qa-answer">在考核期间每人会拥有一位'长者'带你入门，学习技术与知识，交流经验与想法。完成每周的新人任务后再进行一次考核筛选 后就可以成为Geek组正式成员啦！在考核期必须满足每周30个小时在实验室哦,所以考核期也不可以懈怠哦！</div>
+            </div>
+            <div class="qa-item">
+                <div class="qa-question">5.进入Geek组之后都有什么福利呢？</div>
+                <div class="qa-answer">一对一的新人指引，每一个成员都有会一个mentor, 带你初入门槛，与你一同成长，组内管理较宽松,在尊重其他人的前提下可以尽情发挥自己的个性。打破平淡，与同样疯狂的人把疯狂的idea实现，磨砺耐性、培养思维、成就梦想。Lab设备/网络资源充足，闲暇之余也有组织活动。更有许多的故事等你来听~</div>
+            </div>
+            <div class="qa-item">
+                <div class="qa-question">6.进入团队会影响我的日常学习吗？</div>
+                <div class="qa-answer">你要知道大学是一个可以自由安排自己学习生活的地方。如果你想在上课之余充实自己、激励自己，最好的方法就是和比自己更优秀的人在一起。团队不缺优秀的人，而我们也期待同样优秀的你，让我们一起前进！小组里也有不少保研, 考研的前辈们, 大部分都能找到一个平衡点, 而且团队的经历对你日后读研, 工作都大有裨益。</div>
+            </div>
+            <div class="qa-item">
+                <div class="qa-question">7.老师以及学长学姐们的期望是什么?</div>
+                <div class="qa-answer">我们希望你有很强的自学能力，同时关注新事物、新技术，喜欢挑战，逻辑性强，善于和各种文化的人合作.“每个人都可以做自己想做的事情，每个人的方向不一样。如果你想做产品或有不错的 idea，那么就可以找志同道合的人一起合作。”</div>
+            </div>
+        </section>
+    </div>
+
+    <div class="qrcode-modal" id="qrcodeModal">
+        <div class="qrcode-content">
+            <h3>2023级Geek招新群</h3>
+            <p>群号：299263121</p>
+            <img src="qrcode_1699620268564.png" alt="Geek招新群二维码" class="qrcode-img">
+            <p>扫码加入或直接搜索群号</p>
+            <button class="close-btn" id="closeBtn">关闭</button>
+        </div>
+    </div>
+
+    <script>
+        const emailCopy = document.getElementById('emailCopy');
+        emailCopy.addEventListener('click', () => {
+            navigator.clipboard.writeText(emailCopy.textContent)
+                .then(() => {
+                    alert('邮箱地址已复制到剪贴板！');
+                })
+                .catch(err => {
+                    alert('复制失败，请手动复制：' + emailCopy.textContent);
+                });
+        });
+
+        const qaQuestions = document.querySelectorAll('.qa-question');
+        qaQuestions.forEach(question => {
+            question.addEventListener('click', () => {
+                question.classList.toggle('active');
+                const answer = question.nextElementSibling;
+                answer.classList.toggle('show');
+            });
+        });
+
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const targetId = this.getAttribute('href');
+                const targetElement = document.querySelector(targetId);
+                if (targetElement) {
+                    window.scrollTo({
+                        top: targetElement.offsetTop - 70,
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
+
+        const qqBtn = document.getElementById('qqBtn');
+        const qrcodeModal = document.getElementById('qrcodeModal');
+        const closeBtn = document.getElementById('closeBtn');
+
+        qqBtn.addEventListener('click', () => {
+            qrcodeModal.style.display = 'flex';
+            setTimeout(() => {
+                qrcodeModal.classList.add('show');
+            }, 10);
+        });
+
+        function closeModal() {
+            qrcodeModal.classList.remove('show');
+            setTimeout(() => {
+                qrcodeModal.style.display = 'none';
+            }, 300);
+        }
+
+        closeBtn.addEventListener('click', closeModal);
+        qrcodeModal.addEventListener('click', (e) => {
+            if (e.target === qrcodeModal) closeModal();
+        });
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && qrcodeModal.style.display === 'flex') closeModal();
+        });
+    </script>
+</body>
+</html>
